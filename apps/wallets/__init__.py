@@ -1,0 +1,1 @@
+"""Wallets app - Internal ledger and balance management."""

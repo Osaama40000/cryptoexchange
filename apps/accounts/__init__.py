@@ -1,0 +1,1 @@
+"""Accounts app - User management and wallet authentication."""

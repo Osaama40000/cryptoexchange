@@ -1,0 +1,1 @@
+"""Blockchain app - Web3 integration for deposits and withdrawals."""
