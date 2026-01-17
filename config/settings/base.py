@@ -6,8 +6,11 @@ Django Base Settings for CryptoExchange Demo
 import os
 from datetime import timedelta
 from pathlib import Path
-from dotenv import load_dotenv
-
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 load_dotenv()
 
 # =============================================================================
