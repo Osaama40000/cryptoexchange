@@ -1,0 +1,32 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<h1>⚠️ Two-Factor Authentication Disabled</h1>
+
+<p>Hi {{ user.email|truncatechars:20 }},</p>
+
+<p>Two-Factor Authentication has been <span class="warning">disabled</span> on your account.</p>
+
+<div class="info-box">
+    <div class="info-row">
+        <span class="info-label">Status</span>
+        <span class="info-value warning">Disabled</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Disabled At</span>
+        <span class="info-value">{{ disabled_at|date:"F d, Y H:i" }} UTC</span>
+    </div>
+</div>
+
+<div class="security-notice">
+    <p>⚠️ <strong>Security Warning:</strong> Your account is now less secure. We strongly recommend re-enabling 2FA as soon as possible.</p>
+</div>
+
+<p>If you didn't make this change, please secure your account immediately:</p>
+
+<center>
+    <a href="{{ site_url }}/security" class="button">Secure My Account</a>
+</center>
+
+<p>Stay safe,<br>The CryptoExchange Security Team</p>
+{% endblock %}

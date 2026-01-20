@@ -1,0 +1,43 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<h1>🔔 New Login Detected</h1>
+
+<p>Hi {{ user.email|truncatechars:20 }},</p>
+
+<p>We detected a new login to your CryptoExchange account.</p>
+
+<div class="info-box">
+    <div class="info-row">
+        <span class="info-label">Time</span>
+        <span class="info-value">{{ login_time|date:"F d, Y H:i" }} UTC</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">IP Address</span>
+        <span class="info-value">{{ ip_address }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Device</span>
+        <span class="info-value">{{ user_agent|truncatechars:50 }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Location</span>
+        <span class="info-value">{{ location }}</span>
+    </div>
+</div>
+
+<p>If this was you, no action is needed.</p>
+
+<div class="security-notice">
+    <p>⚠️ <strong>Not you?</strong> If you didn't log in, please immediately:</p>
+    <p>1. Change your password</p>
+    <p>2. Enable Two-Factor Authentication</p>
+    <p>3. Contact our support team</p>
+</div>
+
+<center>
+    <a href="{{ site_url }}/security" class="button">Review Security Settings</a>
+</center>
+
+<p>Stay safe,<br>The CryptoExchange Security Team</p>
+{% endblock %}

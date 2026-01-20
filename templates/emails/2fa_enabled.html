@@ -1,0 +1,30 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<h1>✅ Two-Factor Authentication Enabled</h1>
+
+<p>Hi {{ user.email|truncatechars:20 }},</p>
+
+<p>Great news! Two-Factor Authentication has been <span class="success">successfully enabled</span> on your account.</p>
+
+<div class="info-box">
+    <div class="info-row">
+        <span class="info-label">Status</span>
+        <span class="info-value success">Enabled</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Enabled At</span>
+        <span class="info-value">{{ enabled_at|date:"F d, Y H:i" }} UTC</span>
+    </div>
+</div>
+
+<p>Your account is now protected with an additional layer of security. You'll need to enter a code from your authenticator app each time you log in.</p>
+
+<div class="security-notice">
+    <p>🔐 <strong>Important:</strong> Make sure you've saved your backup codes in a safe place. You'll need them if you lose access to your authenticator app.</p>
+</div>
+
+<p>Thank you for keeping your account secure!</p>
+
+<p>Best regards,<br>The CryptoExchange Security Team</p>
+{% endblock %}

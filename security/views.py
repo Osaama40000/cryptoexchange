@@ -443,3 +443,15 @@ class SecurityOverviewView(APIView):
             'last_login': user.last_login,
             'last_password_change': None
         })
+
+# Add this import at the top of the file
+# from emails.services import EmailService
+
+# Then in TwoFactorSetupView.post() after enabling 2FA:
+# EmailService.send_2fa_enabled(user)
+
+# In TwoFactorDisableView.post() after disabling 2FA:
+# EmailService.send_2fa_disabled(user)
+
+# In APIKeyListCreateView.post() after creating key:
+# EmailService.send_api_key_created(user, key_name)

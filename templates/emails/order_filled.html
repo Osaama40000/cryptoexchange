@@ -1,0 +1,42 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<h1>✅ Order Filled</h1>
+
+<p>Hi {{ user.email|truncatechars:20 }},</p>
+
+<p>Your {{ side|upper }} order has been <span class="success">filled successfully</span>!</p>
+
+<div class="info-box">
+    <div class="info-row">
+        <span class="info-label">Order Type</span>
+        <span class="info-value">{{ side|upper }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Trading Pair</span>
+        <span class="info-value">{{ symbol }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Quantity</span>
+        <span class="info-value">{{ quantity }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Price</span>
+        <span class="info-value">${{ price }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Total</span>
+        <span class="info-value success">${{ total|floatformat:2 }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Filled At</span>
+        <span class="info-value">{{ filled_at|date:"F d, Y H:i" }} UTC</span>
+    </div>
+</div>
+
+<center>
+    <a href="{{ site_url }}/orders" class="button">View Order History</a>
+</center>
+
+<p>Happy trading,<br>The CryptoExchange Team</p>
+{% endblock %}

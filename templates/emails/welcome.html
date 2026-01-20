@@ -1,0 +1,30 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<h1>Welcome to CryptoExchange! 🎉</h1>
+
+<p>Hi {{ username }},</p>
+
+<p>Thank you for joining CryptoExchange! We're excited to have you on board.</p>
+
+<p>Your account has been successfully created and you're ready to start trading.</p>
+
+<div class="info-box">
+    <h3 style="color: #ffffff; margin-top: 0;">Get Started:</h3>
+    <p>✅ Deposit funds to your wallet</p>
+    <p>✅ Enable Two-Factor Authentication for security</p>
+    <p>✅ Start trading your favorite cryptocurrencies</p>
+</div>
+
+<center>
+    <a href="{{ site_url }}/trade" class="button">Start Trading</a>
+</center>
+
+<div class="security-notice">
+    <p>🔐 <strong>Security Tip:</strong> Enable Two-Factor Authentication in your security settings to protect your account.</p>
+</div>
+
+<p>If you have any questions, our support team is here to help!</p>
+
+<p>Happy trading,<br>The CryptoExchange Team</p>
+{% endblock %}

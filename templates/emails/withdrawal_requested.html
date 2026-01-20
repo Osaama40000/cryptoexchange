@@ -1,0 +1,40 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<h1>📤 Withdrawal Request Submitted</h1>
+
+<p>Hi {{ user.email|truncatechars:20 }},</p>
+
+<p>We've received your withdrawal request. Here are the details:</p>
+
+<div class="info-box">
+    <div class="info-row">
+        <span class="info-label">Amount</span>
+        <span class="info-value">{{ amount }} {{ currency }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Destination Address</span>
+        <span class="info-value" style="font-size: 12px; word-break: break-all;">{{ address }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Status</span>
+        <span class="info-value warning">Pending</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Requested At</span>
+        <span class="info-value">{{ requested_at|date:"F d, Y H:i" }} UTC</span>
+    </div>
+</div>
+
+<p>Your withdrawal is being processed. You'll receive another email once it's confirmed.</p>
+
+<div class="security-notice">
+    <p>⚠️ <strong>Not you?</strong> If you didn't request this withdrawal, please contact support immediately and secure your account.</p>
+</div>
+
+<center>
+    <a href="{{ site_url }}/wallet" class="button">View Wallet</a>
+</center>
+
+<p>Best regards,<br>The CryptoExchange Team</p>
+{% endblock %}

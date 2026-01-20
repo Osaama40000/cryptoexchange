@@ -367,6 +367,7 @@ LOGGING = {
 }
 # Security App
 INSTALLED_APPS += ['security']
+INSTALLED_APPS += ['emails']
 
 # Rate Limiting Middleware
 MIDDLEWARE += [
@@ -381,3 +382,15 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.Argon2PasswordHasher',
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
 ]
+
+# ==================== Email Configuration ====================
+
+# For development - console backend (prints to terminal)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Default from email
+DEFAULT_FROM_EMAIL = 'CryptoExchange <noreply@cryptoexchange.com>'
+EMAIL_SUBJECT_PREFIX = '[CryptoExchange] '
+
+# Frontend URL for email links
+FRONTEND_URL = 'http://localhost:3000'

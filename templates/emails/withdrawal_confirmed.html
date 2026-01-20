@@ -1,0 +1,36 @@
+{% extends "emails/base.html" %}
+
+{% block content %}
+<h1>✅ Withdrawal Completed</h1>
+
+<p>Hi {{ user.email|truncatechars:20 }},</p>
+
+<p>Your withdrawal has been <span class="success">successfully completed</span>!</p>
+
+<div class="info-box">
+    <div class="info-row">
+        <span class="info-label">Amount</span>
+        <span class="info-value">{{ amount }} {{ currency }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Transaction Hash</span>
+        <span class="info-value" style="font-size: 11px; word-break: break-all;">{{ tx_hash }}</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Status</span>
+        <span class="info-value success">Completed</span>
+    </div>
+    <div class="info-row">
+        <span class="info-label">Confirmed At</span>
+        <span class="info-value">{{ confirmed_at|date:"F d, Y H:i" }} UTC</span>
+    </div>
+</div>
+
+<center>
+    <a href="{{ site_url }}/wallet" class="button">View Wallet</a>
+</center>
+
+<p>Thank you for using CryptoExchange!</p>
+
+<p>Best regards,<br>The CryptoExchange Team</p>
+{% endblock %}

@@ -74,3 +74,14 @@ LOGGING = {
         'level': 'INFO',
     },
 }
+
+# ==================== Production Email Configuration ====================
+# Using SendGrid (recommended)
+
+EMAIL_BACKEND = 'anymail.backends.sendgrid.EmailBackend'
+ANYMAIL = {
+    'SENDGRID_API_KEY': os.environ.get('SENDGRID_API_KEY'),
+}
+
+DEFAULT_FROM_EMAIL = 'CryptoExchange <noreply@cryptoexchange.com>'
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://cryptoexchange-frontend.vercel.app')
