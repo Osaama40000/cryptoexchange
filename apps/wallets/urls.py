@@ -10,7 +10,7 @@ from .views import (
     BalanceDetailView,
     LedgerHistoryView,
     DepositAddressView,
-    DepositListView,
+    DepositHistoryView,
     WithdrawalListView,
     WithdrawalCreateView,
     WithdrawalCancelView,
@@ -39,7 +39,7 @@ urlpatterns = [
 
     # Deposits
     path('deposit-address/<str:currency_symbol>/', DepositAddressView.as_view(), name='deposit_address'),
-    path('deposits/', DepositListView.as_view(), name='deposit_list'),
+    path('deposits/', DepositHistoryView.as_view(), name='deposit_list'),
 
     # Withdrawals
     path('withdrawals/', WithdrawalListView.as_view(), name='withdrawal_list'),
