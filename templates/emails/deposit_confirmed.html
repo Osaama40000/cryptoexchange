@@ -1,32 +1,50 @@
-{% extends "emails/base.html" %}
-
-{% block content %}
-<h1>💰 Deposit Received</h1>
-
-<p>Hi {{ user.email|truncatechars:20 }},</p>
-
-<p>Great news! Your deposit has been <span class="success">confirmed</span> and credited to your account.</p>
-
-<div class="info-box">
-    <div class="info-row">
-        <span class="info-label">Amount</span>
-        <span class="info-value success">{{ amount }} {{ currency }}</span>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Deposit Confirmed - {{ site_name }}</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+        .success-box { background: #d4edda; border: 1px solid #28a745; padding: 20px; border-radius: 5px; margin: 20px 0; text-align: center; }
+        .amount { font-size: 28px; font-weight: bold; color: #28a745; }
+        .info-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .info-table td { padding: 10px 0; border-bottom: 1px solid #eee; }
+        .info-table td:last-child { text-align: right; }
+        .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>💰 Deposit Confirmed!</h1>
     </div>
-    <div class="info-row">
-        <span class="info-label">Status</span>
-        <span class="info-value success">Confirmed</span>
+    <div class="content">
+        <p>Hi {{ user.first_name|default:user.email }},</p>
+        
+        <div class="success-box">
+            <p>Your deposit has been confirmed!</p>
+            <p class="amount">+{{ deposit.amount }} {{ deposit.currency.symbol }}</p>
+        </div>
+        
+        <table class="info-table">
+            <tr>
+                <td>Transaction Hash:</td>
+                <td style="font-size: 12px; word-break: break-all;">{{ deposit.tx_hash|default:"N/A" }}</td>
+            </tr>
+            <tr>
+                <td>Confirmations:</td>
+                <td>{{ deposit.confirmations }}</td>
+            </tr>
+        </table>
+        
+        <p>Your funds are now available for trading!</p>
+        
+        <p>Happy Trading!<br>The {{ site_name }} Team</p>
     </div>
-    <div class="info-row">
-        <span class="info-label">Confirmed At</span>
-        <span class="info-value">{{ confirmed_at|date:"F d, Y H:i" }} UTC</span>
+    <div class="footer">
+        <p>&copy; {{ current_year }} {{ site_name }}. All rights reserved.</p>
     </div>
-</div>
-
-<p>Your funds are now available for trading!</p>
-
-<center>
-    <a href="{{ site_url }}/trade" class="button">Start Trading</a>
-</center>
-
-<p>Happy trading,<br>The CryptoExchange Team</p>
-{% endblock %}
+</body>
+</html>
+EOF

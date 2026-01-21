@@ -4,6 +4,7 @@ Wallets Views
 API endpoints for balance management, deposits, and withdrawals.
 """
 
+import logging
 from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -22,6 +23,8 @@ from .serializers import (
     AdminBalanceAdjustmentSerializer,
 )
 from .services.ledger import LedgerService
+
+logger = logging.getLogger(__name__)
 
 
 # =============================================================================
@@ -200,7 +203,7 @@ class DepositAddressView(APIView):
         })
 
 
-class DepositListView(generics.ListAPIView):
+class DepositHistoryView(generics.ListAPIView):
     """
     GET /api/v1/wallets/deposits/
 
@@ -253,6 +256,14 @@ class WithdrawalCreateView(APIView):
                 to_address=serializer.validated_data['to_address'],
                 amount=serializer.validated_data['amount']
             )
+
+            # Send withdrawal requested email notification
+            try:
+                from emails.notifications import notify_withdrawal_requested
+                notify_withdrawal_requested(request.user, withdrawal)
+                logger.info(f"Withdrawal requested email sent to {request.user.email}")
+            except Exception as e:
+                logger.error(f"Failed to send withdrawal requested email: {e}")
 
             return Response({
                 'message': 'Withdrawal request created successfully',

@@ -1,30 +1,43 @@
-{% extends "emails/base.html" %}
-
-{% block content %}
-<h1>🔑 New API Key Created</h1>
-
-<p>Hi {{ user.email|truncatechars:20 }},</p>
-
-<p>A new API key has been created on your account.</p>
-
-<div class="info-box">
-    <div class="info-row">
-        <span class="info-label">Key Name</span>
-        <span class="info-value">{{ key_name }}</span>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>API Key Created - {{ site_name }}</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+        .info-box { background: #e7f3ff; border: 1px solid #0d6efd; padding: 20px; border-radius: 5px; margin: 20px 0; }
+        .warning-box { background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔑 API Key Created</h1>
     </div>
-    <div class="info-row">
-        <span class="info-label">Created At</span>
-        <span class="info-value">{{ created_at|date:"F d, Y H:i" }} UTC</span>
+    <div class="content">
+        <p>Hi {{ user.first_name|default:user.email }},</p>
+        
+        <div class="info-box">
+            <strong>A new API key has been created for your account.</strong>
+            <p>Key Name: <strong>{{ key_name }}</strong></p>
+        </div>
+        
+        <div class="warning-box">
+            <strong>⚠️ Security Reminder:</strong><br>
+            - Never share your API key or secret with anyone<br>
+            - Use IP whitelisting for additional security<br>
+            - Delete unused API keys
+        </div>
+        
+        <p><strong>Didn't create this?</strong> If you didn't create this API key, please delete it immediately and secure your account.</p>
+        
+        <p>Thanks,<br>The {{ site_name }} Security Team</p>
     </div>
-</div>
-
-<div class="security-notice">
-    <p>⚠️ <strong>Security Reminder:</strong> Never share your API secret with anyone. If you didn't create this key, revoke it immediately in your security settings.</p>
-</div>
-
-<center>
-    <a href="{{ site_url }}/security" class="button">Manage API Keys</a>
-</center>
-
-<p>Best regards,<br>The CryptoExchange Security Team</p>
-{% endblock %}
+    <div class="footer">
+        <p>&copy; {{ current_year }} {{ site_name }}. All rights reserved.</p>
+    </div>
+</body>
+</html>
+EOF

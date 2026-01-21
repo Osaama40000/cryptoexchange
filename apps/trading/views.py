@@ -4,6 +4,7 @@ Trading Views
 API endpoints for order management and market data.
 """
 
+import logging
 from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -20,6 +21,8 @@ from .serializers import (
 )
 from .services.matching_engine import MatchingEngine
 from .services.order_book import OrderBookService
+
+logger = logging.getLogger(__name__)
 
 
 # =============================================================================
@@ -160,6 +163,15 @@ class CreateOrderView(APIView):
                 client_order_id=serializer.validated_data.get('client_order_id')
             )
 
+            # Send email notification if order was filled (has trades)
+            if trades and len(trades) > 0:
+                try:
+                    from emails.notifications import notify_order_filled
+                    notify_order_filled(request.user, order)
+                    logger.info(f"Order filled email sent to {request.user.email}")
+                except Exception as e:
+                    logger.error(f"Failed to send order filled email: {e}")
+
             return Response({
                 'message': 'Order created successfully',
                 'order': OrderSerializer(order).data,
@@ -208,7 +220,7 @@ class UserOrdersView(generics.ListAPIView):
     """
     GET /api/v1/trading/orders/
 
-    List user's orders.
+    Get all orders for the current user.
     """
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
@@ -216,26 +228,29 @@ class UserOrdersView(generics.ListAPIView):
     def get_queryset(self):
         queryset = Order.objects.filter(user=self.request.user)
 
-        status_filter = self.request.query_params.get('status')
-        if status_filter:
-            queryset = queryset.filter(status=status_filter)
+        # Filter by status
+        order_status = self.request.query_params.get('status')
+        if order_status:
+            queryset = queryset.filter(status=order_status)
 
+        # Filter by symbol
         symbol = self.request.query_params.get('symbol')
         if symbol:
             queryset = queryset.filter(trading_pair__symbol=symbol.upper())
 
-        open_only = self.request.query_params.get('open_only')
-        if open_only and open_only.lower() == 'true':
-            queryset = queryset.filter(status__in=['open', 'partial'])
+        # Filter by side
+        side = self.request.query_params.get('side')
+        if side:
+            queryset = queryset.filter(side=side)
 
-        return queryset.select_related('trading_pair').order_by('-created_at')
+        return queryset.order_by('-created_at')
 
 
 class UserOpenOrdersView(generics.ListAPIView):
     """
     GET /api/v1/trading/orders/open/
 
-    List user's open orders only.
+    Get open orders for the current user.
     """
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
@@ -243,25 +258,21 @@ class UserOpenOrdersView(generics.ListAPIView):
     def get_queryset(self):
         return Order.objects.filter(
             user=self.request.user,
-            status__in=['open', 'partial']
-        ).select_related('trading_pair').order_by('-created_at')
+            status__in=['pending', 'partially_filled']
+        ).order_by('-created_at')
 
 
 class UserTradesView(generics.ListAPIView):
     """
-    GET /api/v1/trading/user/trades/
+    GET /api/v1/trading/user-trades/
 
-    List user's trade history.
+    Get trade history for the current user.
     """
     serializer_class = UserTradeSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Trade.objects.filter(
-            Q(buyer=self.request.user) | Q(seller=self.request.user)
-        ).select_related('trading_pair').order_by('-created_at')
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context['request'] = self.request
-        return context
+            Q(maker_order__user=self.request.user) |
+            Q(taker_order__user=self.request.user)
+        ).order_by('-created_at')
