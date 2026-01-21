@@ -2,19 +2,38 @@
 Production settings
 """
 import os
+import dj_database_url
 from .base import *
 
 DEBUG = False
 
 # Allow Railway domains automatically
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
-# Always allow .railway.app subdomains
 ALLOWED_HOSTS.append('.railway.app')
-# Remove empty strings
 ALLOWED_HOSTS = [h.strip() for h in ALLOWED_HOSTS if h.strip()]
 
-# Security settings for production
-SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'True') == 'True'
+# Database - Use DATABASE_URL from Railway
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
+    }
+
+# Redis Cache - Use REDIS_URL from Railway
+REDIS_URL = os.environ.get('REDIS_URL')
+if REDIS_URL:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': REDIS_URL,
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            }
+        }
+    }
+
+# Security settings
+SECURE_SSL_REDIRECT = False
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
