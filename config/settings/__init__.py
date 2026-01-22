@@ -1,1 +1,1 @@
-"""Settings package."""
+# Settings package
