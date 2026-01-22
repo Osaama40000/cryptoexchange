@@ -1,7 +1,6 @@
 """
 Trading Admin Configuration
 """
-
 from django.contrib import admin
 from .models import TradingPair, Order, Trade
 
@@ -15,11 +14,9 @@ class TradingPairAdmin(admin.ModelAdmin):
     list_filter = ['is_active', 'base_currency', 'quote_currency']
     search_fields = ['symbol']
     ordering = ['symbol']
-
     fieldsets = (
         (None, {'fields': ('symbol', 'base_currency', 'quote_currency', 'is_active')}),
-        ('Order Constraints',
-         {'fields': ('min_order_size', 'max_order_size', 'price_precision', 'quantity_precision')}),
+        ('Order Constraints', {'fields': ('min_quantity', 'max_quantity', 'quantity_step', 'min_price', 'max_price', 'price_step', 'min_notional')}),
         ('Fees', {'fields': ('maker_fee', 'taker_fee')}),
         ('Market Stats', {'fields': ('last_price', 'price_change_24h', 'high_24h', 'low_24h', 'volume_24h')}),
     )
@@ -34,7 +31,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ['status', 'side', 'order_type', 'trading_pair']
     search_fields = ['user__email', 'id', 'client_order_id']
     ordering = ['-created_at']
-    readonly_fields = ['id', 'created_at', 'updated_at', 'filled_at', 'cancelled_at']
+    readonly_fields = ['id', 'created_at', 'updated_at']
 
 
 @admin.register(Trade)

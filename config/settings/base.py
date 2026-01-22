@@ -58,6 +58,8 @@ LOCAL_APPS = [
     'apps.trading',
     'apps.blockchain',
     'apps.audit',
+    'apps.core',
+
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

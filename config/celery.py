@@ -22,3 +22,26 @@ app.conf.beat_schedule = {
         'schedule': 60.0,
     },
 }
+# Add periodic task for stop order checking
+app.conf.beat_schedule.update({
+    'check-stop-orders': {
+        'task': 'apps.trading.tasks.check_stop_orders',
+        'schedule': 5.0,  # Every 5 seconds
+    },
+    'process-triggered-orders': {
+        'task': 'apps.trading.tasks.process_triggered_orders',
+        'schedule': 3.0,  # Every 3 seconds
+    },
+})
+
+# Add periodic task for stop order checking
+app.conf.beat_schedule.update({
+    'check-stop-orders': {
+        'task': 'apps.trading.tasks.check_stop_orders',
+        'schedule': 5.0,  # Every 5 seconds
+    },
+    'process-triggered-orders': {
+        'task': 'apps.trading.tasks.process_triggered_orders',
+        'schedule': 3.0,  # Every 3 seconds
+    },
+})
