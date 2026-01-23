@@ -376,6 +376,8 @@ LOGGING = {
 # Security App
 INSTALLED_APPS += ['security']
 INSTALLED_APPS += ['emails']
+INSTALLED_APPS += ['apps.kyc']
+
 
 # Rate Limiting Middleware
 MIDDLEWARE += [
