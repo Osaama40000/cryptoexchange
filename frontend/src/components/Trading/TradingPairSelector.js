@@ -9,8 +9,19 @@ const TradingPairSelector = ({ pairs = [], currentPair, onSelect, ticker }) => {
   const pairsArray = Array.isArray(pairs) ? pairs : [];
 
   const filteredPairs = pairsArray.filter(pair =>
-    pair.symbol.toLowerCase().includes(search.toLowerCase())
+    pair.symbol.toLowerCase().includes(search.toLowerCase()) ||
+    pair.base_currency?.toLowerCase().includes(search.toLowerCase()) ||
+    pair.quote_currency?.toLowerCase().includes(search.toLowerCase())
   );
+
+  // Format pair symbol as "BTC/USDT"
+  const formatPairSymbol = (pair) => {
+    if (!pair) return 'Select Pair';
+    if (pair.base_currency && pair.quote_currency) {
+      return `${pair.base_currency}/${pair.quote_currency}`;
+    }
+    return pair.symbol;
+  };
 
   const formatPrice = (price) => {
     if (!price) return '-';
@@ -42,7 +53,7 @@ const TradingPairSelector = ({ pairs = [], currentPair, onSelect, ticker }) => {
         <div>
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold text-exchange-text">
-              {currentPair?.symbol?.replace('_', '/') || 'Select Pair'}
+              {formatPairSymbol(currentPair)}
             </span>
             <ChevronDownIcon className={`w-4 h-4 text-exchange-muted transition-transform ${isOpen ? 'rotate-180' : ''}`} />
           </div>
@@ -94,7 +105,7 @@ const TradingPairSelector = ({ pairs = [], currentPair, onSelect, ticker }) => {
                     >
                       <div>
                         <div className="font-medium text-exchange-text">
-                          {pair.symbol.replace('_', '/')}
+                          {formatPairSymbol(pair)}
                         </div>
                         <div className="text-xs text-exchange-muted">
                           Vol: {parseFloat(pair.volume_24h || 0).toFixed(2)}

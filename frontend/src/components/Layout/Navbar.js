@@ -12,6 +12,8 @@ import {
   Bars3Icon,
   XMarkIcon,
   ShieldCheckIcon,
+  PresentationChartLineIcon,
+  PaperAirplaneIcon,
 } from '@heroicons/react/24/outline';
 
 const Navbar = () => {
@@ -28,13 +30,15 @@ const Navbar = () => {
   };
 
   const navItems = [
-  { path: '/trade', label: 'Trade', icon: ChartBarIcon },
-  { path: '/wallet', label: 'Wallet', icon: WalletIcon },
-  { path: '/orders', label: 'Orders', icon: ClipboardDocumentListIcon },
-  { path: '/security', label: 'Security', icon: ShieldCheckIcon },
-  { path: '/settings', label: 'Settings', icon: Cog6ToothIcon },
-  ...(user?.is_staff ? [{ path: '/admin', label: 'Admin', icon: ShieldCheckIcon }] : []),
-];
+    { path: '/trade', label: 'Trade', icon: ChartBarIcon },
+    { path: '/market', label: 'Market', icon: PresentationChartLineIcon },
+    { path: '/transfer', label: 'Transfer', icon: PaperAirplaneIcon },
+    { path: '/wallet', label: 'Wallet', icon: WalletIcon },
+    { path: '/orders', label: 'Orders', icon: ClipboardDocumentListIcon },
+    { path: '/security', label: 'Security', icon: ShieldCheckIcon },
+    { path: '/settings', label: 'Settings', icon: Cog6ToothIcon },
+    ...(user?.is_staff ? [{ path: '/admin', label: 'Admin', icon: ShieldCheckIcon }] : []),
+  ];
 
   const NavLink = ({ item, mobile = false }) => {
     const Icon = item.icon;
@@ -62,7 +66,6 @@ const Navbar = () => {
     <nav className="bg-exchange-card border-b border-exchange-border sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
           <Link to="/trade" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-lg flex items-center justify-center shadow-lg shadow-primary-500/20">
               <span className="text-white font-bold text-sm">CE</span>
@@ -72,16 +75,13 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center gap-1">
             {navItems.map((item) => (
               <NavLink key={item.path} item={item} />
             ))}
           </div>
 
-          {/* Right side */}
           <div className="flex items-center gap-2 sm:gap-4">
-            {/* Wallet Connection - Desktop */}
             <div className="hidden sm:block">
               {address ? (
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-success/10 border border-success/30 rounded-lg">
@@ -104,12 +104,10 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* User info - Desktop */}
             <div className="hidden sm:block text-sm text-exchange-muted truncate max-w-[120px]">
               {user?.email?.split('@')[0]}
             </div>
 
-            {/* Logout - Desktop */}
             <button
               onClick={handleLogout}
               className="hidden sm:flex items-center gap-2 px-3 py-2 text-exchange-muted hover:text-exchange-text transition-colors"
@@ -118,7 +116,6 @@ const Navbar = () => {
               <ArrowRightOnRectangleIcon className="w-5 h-5" />
             </button>
 
-            {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden p-2 text-exchange-muted hover:text-exchange-text"
@@ -133,16 +130,13 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden border-t border-exchange-border animate-slideDown">
           <div className="px-4 py-4 space-y-2">
-            {/* Mobile Nav Links */}
             {navItems.map((item) => (
               <NavLink key={item.path} item={item} mobile />
             ))}
 
-            {/* Mobile Wallet */}
             <div className="pt-4 border-t border-exchange-border">
               {address ? (
                 <div className="flex items-center gap-2 px-4 py-2 bg-success/10 rounded-lg">
@@ -163,7 +157,6 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Mobile User Info & Logout */}
             <div className="flex items-center justify-between px-4 py-2">
               <span className="text-sm text-exchange-muted">
                 {user?.email}
