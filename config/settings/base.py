@@ -111,15 +111,18 @@ ASGI_APPLICATION = 'config.asgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'cryptoexchange'),
-        'USER': os.getenv('DB_USER', 'exchange_user'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'exchange_dev_password_2024'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+
+        'NAME': os.getenv('PGDATABASE'),
+        'USER': os.getenv('PGUSER'),
+        'PASSWORD': os.getenv('PGPASSWORD'),
+        'HOST': os.getenv('PGHOST'),
+        'PORT': os.getenv('PGPORT', '5432'),
+
         'ATOMIC_REQUESTS': True,
         'CONN_MAX_AGE': 60,
     }
 }
+
 
 # =============================================================================
 # REDIS & CACHE

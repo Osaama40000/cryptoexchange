@@ -321,7 +321,7 @@ const TransferPage = () => {
           <div className="bg-white p-4 rounded-lg inline-block mb-4">
             <QRCodeSVG
               value={JSON.stringify({
-                platform: 'CryptoExchange',
+                platform: 'ToKeNlY',
                 email: user?.email,
                 type: 'transfer',
               })}

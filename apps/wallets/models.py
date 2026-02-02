@@ -361,3 +361,50 @@ class Withdrawal(models.Model):
     def net_amount(self):
         """Amount after fee deduction."""
         return self.amount - self.fee
+
+    class P2PTransfer(models.Model):
+        sender = models.ForeignKey(
+            settings.AUTH_USER_MODEL,
+            on_delete=models.CASCADE,
+            related_name='sent_transfers'
+        )
+        recipient = models.ForeignKey(
+            settings.AUTH_USER_MODEL,
+            on_delete=models.CASCADE,
+            related_name='received_transfers'
+        )
+        currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
+        amount = models.DecimalField(max_digits=24, decimal_places=8)
+        note = models.CharField(max_length=255, blank=True, default='')
+        status = models.CharField(max_length=20, default='completed')
+        created_at = models.DateTimeField(auto_now_add=True)
+        updated_at = models.DateTimeField(auto_now=True)
+
+        class Meta:
+            ordering = ['-created_at']
+
+        def __str__(self):
+            return f"{self.sender} -> {self.recipient}: {self.amount} {self.currency.symbol}"
+class P2PTransfer(models.Model):
+    sender = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='sent_transfers'
+    )
+    recipient = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='received_transfers'
+    )
+    currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=24, decimal_places=8)
+    note = models.CharField(max_length=255, blank=True, default='')
+    status = models.CharField(max_length=20, default='completed')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.sender} -> {self.recipient}: {self.amount} {self.currency.symbol}"

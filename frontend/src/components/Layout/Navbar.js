@@ -68,10 +68,10 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           <Link to="/trade" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-lg flex items-center justify-center shadow-lg shadow-primary-500/20">
-              <span className="text-white font-bold text-sm">CE</span>
+              <span className="text-white font-bold text-sm">TK</span>
             </div>
             <span className="text-xl font-bold text-exchange-text hidden sm:block">
-              CryptoExchange
+              ToKeNlY
             </span>
           </Link>
 

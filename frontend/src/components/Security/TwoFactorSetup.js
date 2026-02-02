@@ -131,7 +131,7 @@ ${backupCodes.map((code, i) => `║  ${i + 1}. ${code}                          
 ║                                                              ║
 ╠══════════════════════════════════════════════════════════════╣
 ║  Generated: ${new Date().toISOString()}              ║
-║  Account: CryptoExchange                                     ║
+║  Account: ToKeNlY                                    ║
 ╚══════════════════════════════════════════════════════════════╝
     `.trim();
 

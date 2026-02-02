@@ -61,7 +61,7 @@ const Terms = () => {
         <section className="mb-8">
           <h2 className="text-xl font-semibold text-white mb-4">6. Contact</h2>
           <p className="text-gray-300">
-            For questions about these Terms, please contact us at legal@cryptoexchange.com
+            For questions about these Terms, please contact us at legal@tokenly.com
           </p>
         </section>
       </div>

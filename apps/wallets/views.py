@@ -11,6 +11,13 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.conf import settings
 
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from django.db import transaction
+from django.contrib.auth import get_user_model
+from decimal import Decimal
+from .models import Balance, Currency, LedgerEntry
+
 from .models import Currency, Balance, LedgerEntry, Deposit, Withdrawal
 from .serializers import (
     CurrencySerializer,
@@ -366,3 +373,213 @@ class AdminBalanceAdjustmentView(APIView):
                 {'error': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+
+User = get_user_model()
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def p2p_transfer(request):
+    """
+    Transfer crypto from one user to another within the platform.
+
+    Request body:
+    {
+        "currency_symbol": "BTC",
+        "recipient_email": "user@example.com",  # OR
+        "recipient_username": "username",
+        "amount": "0.001",
+        "note": "Optional message"
+    }
+    """
+    try:
+        currency_symbol = request.data.get('currency_symbol')
+        recipient_email = request.data.get('recipient_email')
+        recipient_username = request.data.get('recipient_username')
+        amount = Decimal(str(request.data.get('amount', 0)))
+        note = request.data.get('note', '')
+
+        # Validate required fields
+        if not currency_symbol:
+            return Response(
+                {'error': 'Currency is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not recipient_email and not recipient_username:
+            return Response(
+                {'error': 'Recipient email or username is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if amount <= 0:
+            return Response(
+                {'error': 'Amount must be greater than 0'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Get currency
+        try:
+            currency = Currency.objects.get(symbol=currency_symbol)
+        except Currency.DoesNotExist:
+            return Response(
+                {'error': f'Currency {currency_symbol} not found'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Find recipient
+        recipient = None
+        if recipient_email:
+            try:
+                recipient = User.objects.get(email=recipient_email)
+            except User.DoesNotExist:
+                return Response(
+                    {'error': 'Recipient not found with this email'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        elif recipient_username:
+            try:
+                recipient = User.objects.get(username=recipient_username)
+            except User.DoesNotExist:
+                return Response(
+                    {'error': 'Recipient not found with this username'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        # Check if sender is trying to send to themselves
+        if recipient == request.user:
+            return Response(
+                {'error': 'Cannot transfer to yourself'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Get or create sender's balance
+        sender_balance, _ = Balance.objects.get_or_create(
+            user=request.user,
+            currency=currency,
+            defaults={'available': Decimal('0'), 'locked': Decimal('0')}
+        )
+
+        # Check sender has sufficient balance
+        if sender_balance.available < amount:
+            return Response(
+                {'error': 'Insufficient balance'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Get or create recipient's balance
+        recipient_balance, _ = Balance.objects.get_or_create(
+            user=recipient,
+            currency=currency,
+            defaults={'available': Decimal('0'), 'locked': Decimal('0')}
+        )
+
+        # Perform transfer atomically
+        with transaction.atomic():
+            # Deduct from sender
+            sender_balance.available -= amount
+            sender_balance.save()
+
+            # Add to recipient
+            recipient_balance.available += amount
+            recipient_balance.save()
+
+            # Create transfer record
+            transfer = P2PTransfer.objects.create(
+                sender=request.user,
+                recipient=recipient,
+                currency=currency,
+                amount=amount,
+                note=note,
+                status='completed'
+            )
+
+            # Create ledger entries for audit trail
+            LedgerEntry.objects.create(
+                user=request.user,
+                currency=currency,
+                entry_type='p2p_send',
+                amount=-amount,
+                balance_after=sender_balance.available,
+                reference_id=str(transfer.id),
+                description=f'P2P transfer to {recipient.email or recipient.username}'
+            )
+
+            LedgerEntry.objects.create(
+                user=recipient,
+                currency=currency,
+                entry_type='p2p_receive',
+                amount=amount,
+                balance_after=recipient_balance.available,
+                reference_id=str(transfer.id),
+                description=f'P2P transfer from {request.user.email or request.user.username}'
+            )
+
+        return Response({
+            'success': True,
+            'message': f'Successfully sent {amount} {currency_symbol} to {recipient.email or recipient.username}',
+            'transfer': {
+                'id': transfer.id,
+                'amount': str(amount),
+                'currency': currency_symbol,
+                'recipient': recipient.email or recipient.username,
+                'status': 'completed',
+                'created_at': transfer.created_at.isoformat()
+            }
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_transfers(request):
+    """
+    Get user's P2P transfer history (both sent and received).
+    """
+    try:
+        # Get transfers where user is sender or recipient
+        sent = P2PTransfer.objects.filter(sender=request.user).select_related('recipient', 'currency')
+        received = P2PTransfer.objects.filter(recipient=request.user).select_related('sender', 'currency')
+
+        transfers = []
+
+        for t in sent:
+            transfers.append({
+                'id': t.id,
+                'type': 'sent',
+                'currency_symbol': t.currency.symbol,
+                'amount': str(t.amount),
+                'recipient': t.recipient.email or t.recipient.username,
+                'note': t.note,
+                'status': t.status,
+                'created_at': t.created_at.isoformat()
+            })
+
+        for t in received:
+            transfers.append({
+                'id': t.id,
+                'type': 'received',
+                'currency_symbol': t.currency.symbol,
+                'amount': str(t.amount),
+                'sender': t.sender.email or t.sender.username,
+                'note': t.note,
+                'status': t.status,
+                'created_at': t.created_at.isoformat()
+            })
+
+        # Sort by date descending
+        transfers.sort(key=lambda x: x['created_at'], reverse=True)
+
+        return Response(transfers, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
