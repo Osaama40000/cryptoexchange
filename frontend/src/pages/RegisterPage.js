@@ -60,7 +60,7 @@ const RegisterPage = () => {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
             <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center">
-              <span className="text-white text-2xl font-bold">CE</span>
+              <span className="text-white text-2xl font-bold">TK</span>
             </div>
           </div>
           <h1 className="text-3xl font-bold text-exchange-text">
