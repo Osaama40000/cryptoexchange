@@ -75,6 +75,10 @@ SECURE_HSTS_PRELOAD = True
 
 # CORS
 CORS_ALLOWED_ORIGINS = [
+    'https://cryptoexchange-gilt.vercel.app',
+    'https://cryptoexchange-ap9bpi2ug-osamas-projects-85e1d3c3.vercel.app',
+    'https://www.tokenly.com',
+
     'https://cryptoexchange.vercel.app',
 ]
 FRONTEND_URL = os.environ.get('FRONTEND_URL')
