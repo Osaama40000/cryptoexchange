@@ -42,10 +42,6 @@ def get_tokens_for_user(user):
 # =============================================================================
 
 class RegisterView(generics.CreateAPIView):
-    """
-    POST /api/v1/auth/register/
-    Register a new user with email and password.
-    """
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
@@ -53,10 +49,25 @@ class RegisterView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        
-        # Email disabled
-        
+        from django.contrib.auth.hashers import make_password
+        data = serializer.validated_data
+        email = data['email']
+        base_username = email.split('@')[0]
+        username = base_username
+        counter = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{base_username}{counter}"
+            counter += 1
+        user = User(
+            email=email,
+            username=username,
+            first_name=data.get('first_name', ''),
+            last_name=data.get('last_name', ''),
+            is_active=True,
+            is_email_verified=True,
+        )
+        user.password = make_password(data['password'])
+        user.save()
         tokens = get_tokens_for_user(user)
         return Response({
             'message': 'Registration successful',
