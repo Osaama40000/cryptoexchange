@@ -56,12 +56,10 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
-        email = attrs.get('email')
-        password = attrs.get('password')
         from apps.accounts.models import User as UserModel
         try:
-            user = UserModel.objects.get(email=email)
-            if not user.check_password(password):
+            user = UserModel.objects.get(email=attrs.get('email'))
+            if not user.check_password(attrs.get('password')):
                 raise serializers.ValidationError('Invalid email or password.')
             if not user.is_active:
                 raise serializers.ValidationError('Account is disabled.')
