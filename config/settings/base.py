@@ -143,10 +143,7 @@ SESSION_CACHE_ALIAS = 'default'
 # =============================================================================
 CHANNEL_LAYERS = {
     'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [REDIS_URL],
-        },
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
     },
 }
 
