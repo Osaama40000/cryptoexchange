@@ -91,7 +91,10 @@ class RateLimitMiddleware:
         cache_key = f'ratelimit:{category}:{client_id}'
 
         # Check rate limit
-        current = cache.get(cache_key, 0)
+        try:
+            current = cache.get(cache_key, 0) or 0
+        except Exception:
+            return self.get_response(request)
         if current >= limit:
             logger.warning(f"Rate limit exceeded: {client_id} on {category} ({current}/{limit})")
             return JsonResponse({
